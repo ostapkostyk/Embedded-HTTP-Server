@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Device</title>
+<style> 
+.button {
+background-color: #4CAF50;
+border: yes;
+color: white;
+padding: 8px 32px;
+margin: 4px 2px;
+text-align: center;
+text-decoration: none;
+display: inline-block;
+font-size: 16px;
+cursor: pointer;
+}
+a.button {
+-webkit-appearance: button;
+-moz-appearance: button;
+appearance: button;
+text-decoration: none;
+display:block;
+font-size: 20px;
+}
+.button1 {background-color: #008CBA;} /* Blue */
+canvas {border: 3px #CCC solid;}
+</style>
+</head>
+<body onload="formChanged()">
+<div>
+<table style="height: 280px; width: 100%;">
+<tbody>
+<tr style="height: 43px;">
+<td style="width: 80%; height: 43px;" colspan="3" bgcolor="green">
+<h1 style="padding-left: 30px;">Device Control and Configuration</h1>
+</td>
+</tr>
+<tr style="height: 229.8px; vertical-align: top;">
+<td style="width: 20%; height: 400px;  text-align: center;" bgcolor="#8FBC8F">
+<a href="/" class="button"><div style="width:95%">Home</div></a>
+<a href="settings.html" class="button"><div style="width:95%">Settings</div></a>
+</td>
+<td style="width: 50%; height: 400px;  text-align: center;" bgcolor="#F5F5DC">
+<h2>Settings</h2>
+<p style="text-align: left;"><b>Blue LED:</b>
+<form action="settings.html" method="get">
+<p style="text-align: left;">
+LED On time: <input type="number" style="width: 80px;" id="bLEDOn" name="BlueLEDBlinkTimeOn" value="100"> ms<br />
+LED Off time: <input type="number" style="width: 80px;" id="bLEDOff" name="BlueLEDBlinkTimeOff" value="200"> ms<br />
+<p style="text-align: center;">
+<input type="submit" class="button button1" value="Save">
+</form>
+<hr>
+<p style="text-align: left;"><b>WiFi SSID:</b><br /><br />
+Actual: "ESP"<br />
+<form action="settings.html" method="get">
+<p style="text-align: left;">
+New SSID (max 20 symbols): <input type="text" name="WiFiSSIDTxt"><br>
+<p style="text-align: center;">
+<input type="submit" class="button button1" value="Submit">
+</form>
+<p style="text-align: left;">Note: device must be restarted to make the changes of SSID take effect.</p>
+</p>
+</td>
+<td style="width: 30%; height: 400px;" bgcolor="#DCDCDC"><p>Info:</p><p>LED On and Off times for blinking mode can be configured here.<br /> <br /> Time intervals are in milliseconds<br /> <br />SSID accepts symbols a-z, A-Z, numbers 0-9, minus and underscore</p></td>
+</tr>
+<tr style="height: 20px;">
+<td style="width: 94%; height: 40px; text-align: right;" colspan="3" bgcolor="#DCDCDC">Developed by Ostap Kostyk&nbsp;&copy;</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p id="BLEDOnAct", visibility: hidden>1234</p>
+<p id="BLEDOffAct", visibility: hidden>5678</p>
+<script>
+function formChanged() {
+document.getElementById("bLEDOn").defaultValue = document.getElementById("BLEDOnAct").innerHTML;
+document.getElementById("bLEDOff").defaultValue = document.getElementById("BLEDOffAct").innerHTML;
+}
+window.onload = formChanged();
+</script>
+</body>
+</html>

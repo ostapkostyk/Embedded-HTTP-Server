@@ -65,15 +65,15 @@
 
 #ifdef USE_CUSTOM_MEMMGR
 
-//#define malloc(x)      memmgr_alloc(x)
-//#define free(x)        memmgr_free(x)
+#define malloc(x)      memmgr_alloc(x)
+#define free(x)        memmgr_free(x)
 
 #endif
 
 //#define DEBUG_MEMMGR_SUPPORT_STATS 1
 
 #define POOL_SIZE 2 * 1024
-#define MIN_POOL_ALLOC_QUANTAS 16
+#define MIN_POOL_ALLOC_QUANTAS 8
 
 
 typedef unsigned char byte;
@@ -99,5 +99,7 @@ void memmgr_free(void* ap);
 //
 void memmgr_print_stats();
 
+//============================================================================
+void free(void * ap);
 
 #endif // MEMMGR_H

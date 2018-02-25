@@ -249,6 +249,15 @@ _lseek(int file, int ptr, int dir)
   return 0;
 }
 
+int _getpid(void)
+{
+    return 0;
+}
+
+int _kill(int pid, int sig)
+{
+    return 0;
+}
 
 /*** EOF ***/
 

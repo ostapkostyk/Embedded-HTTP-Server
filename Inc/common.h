@@ -14,4 +14,7 @@
 #define PIN_STATE_LOW    GPIO_PIN_RESET     //  definition to set the pin to low level
 // End Of HW dependent definitions
 
+#define str(x)          # x
+#define xstr(x)         str(x)
+
 #endif

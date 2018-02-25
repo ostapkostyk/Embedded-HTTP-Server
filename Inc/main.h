@@ -49,6 +49,10 @@
 
 /* Private define ------------------------------------------------------------*/
 
+#define ESP_RST_Pin GPIO_PIN_4
+#define ESP_RST_GPIO_Port GPIOA
+#define ESP_CH_EN_Pin GPIO_PIN_5
+#define ESP_CH_EN_GPIO_Port GPIOA
 #define LED1_Pin GPIO_PIN_0
 #define LED1_GPIO_Port GPIOB
 #define Button1_Pin GPIO_PIN_1
@@ -73,8 +77,12 @@
 
 /* USER CODE BEGIN Private defines */
 
-/* USER CODE END Private defines */
+// Links to dynamicly generated HTML parts
+extern char HTTP_Index_Body2[];
+extern char* pHTTP_StringForRendering;
+extern char* pHTTP_StringForRendering2;
 
+/* USER CODE END Private defines */
 #ifdef __cplusplus
  extern "C" {
 #endif

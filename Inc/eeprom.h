@@ -58,14 +58,17 @@
  *    Application Specific Configuration
  **********************************************/
 
-#define EE_STRING1_LEN  (10*2)
+#define EE_WIFI_SSID_LEN  (11*2)
+#define EE_INIT_MAGIC_NUMBER    0xABCD
 
 /* Size of each element MUST be multiple to uint16_t */
 typedef struct
 {
-  uint16_t MyNum16;
-  char MyString[EE_STRING1_LEN];
-  uint32_t MyNum32;
+  uint16_t Init;
+  uint32_t BlueLEDOnTime;
+  uint32_t BlueLEDOffTime;
+  uint16_t BlueLEDMode;
+  char     WiFi_SSID[EE_WIFI_SSID_LEN];
 }EE_Data_t;
 
 /**********************************************/

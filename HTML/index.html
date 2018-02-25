@@ -1,0 +1,114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Device</title>
+<style> 
+.button {
+background-color: #4CAF50;
+border: yes;
+color: white;
+padding: 8px 32px;
+margin: 4px 2px;
+text-align: center;
+text-decoration: none;
+display: inline-block;
+font-size: 16px;
+cursor: pointer;
+}
+a.button {
+-webkit-appearance: button;
+-moz-appearance: button;
+appearance: button;
+text-decoration: none;
+display:block;
+font-size: 20px;
+}
+.button1 {background-color: #008CBA;} /* Blue */
+canvas {border: 3px #CCC solid;}
+</style>
+</head>
+<body>
+<div>
+<table style="height: 280px; width: 100%;">
+<tbody>
+<tr style="height: 43px;">
+<td style="width: 80%; height: 43px;" colspan="3" bgcolor="green">
+<h1 style="padding-left: 30px;">Device Control and Configuration</h1>
+</td>
+</tr>
+<tr style="height: 229.8px; vertical-align: top;">
+<td style="width: 20%; height: 400px;  text-align: center;" bgcolor="#8FBC8F">
+<a href="/" class="button"><div style="width:95%">Home</div></a>
+<a href="settings.html" class="button"><div style="width:95%">Settings</div></a>
+</td>
+<td style="width: 50%; height: 400px;  text-align: center;" bgcolor="#F5F5DC">
+<h2>Control</h2>
+<p style="text-align: left;"><b>Blue LED:</b><br />State:
+<div id="container">
+<canvas id="BlueLEDCanvas" height="100" width="100"></canvas>
+</div>
+<p style="text-align: left;">Control:
+<form action="index.html" method="get">
+<input type="submit" class="button button1" name="BlueLEDMode" value="ON">
+<input type="submit" class="button button1" name="BlueLEDMode" value="OFF">
+<input type="submit" class="button button1" name="BlueLEDMode" value="BLINK">
+</form>
+<p id="BLEDMode", visibility: hidden>2</p>
+</p>
+</td>
+<td style="width: 30%; height: 400px;" bgcolor="#DCDCDC"><p>Info:</p><p>Use Buttons to control LEDs modes<br /><br />Gray color of the circle means that the LED is off</p></td>
+</tr>
+<tr style="height: 20px;">
+<td style="width: 94%; height: 40px; text-align: right;" colspan="3" bgcolor="#DCDCDC">Developed by Ostap Kostyk&nbsp;&copy;</td>
+</tr>
+</tbody>
+</table>
+</div>
+<script>
+var mainCanvas = document.querySelector("#BlueLEDCanvas");
+var mainContext = mainCanvas.getContext("2d");
+var canvasWidth = mainCanvas.width;
+var canvasHeight = mainCanvas.height;
+var requestAnimationFrame = window.requestAnimationFrame || 
+window.mozRequestAnimationFrame || 
+window.webkitRequestAnimationFrame || 
+window.msRequestAnimationFrame;
+var radius = 45;
+//var BlueLEDMode = 0;
+function drawCircle() {
+if (typeof drawCircle.BlinkCounter == 'undefined')
+{drawCircle.BlinkCounter = 0; }
+var Bcolor = "#000000";
+var LEDMode_elem = document.getElementById("BLEDMode");
+var BlueLEDMode = LEDMode_elem.innerHTML;
+    mainContext.clearRect(0, 0, canvasWidth, canvasHeight);
+    // color in the background
+    mainContext.fillStyle = "#EEEEEE";
+    mainContext.fillRect(0, 0, canvasWidth, canvasHeight); 
+    // draw the circle
+    mainContext.beginPath();
+    mainContext.arc(50, 50, radius, 0, Math.PI * 2, false);
+    mainContext.closePath();
+    // color in the circle
+    drawCircle.BlinkCounter++;
+	
+	switch(BlueLEDMode)
+	{
+	case "0": Bcolor = "#B8B8B8"; break;
+	case "1": Bcolor = "#006699"; break;
+	case "2": if(drawCircle.BlinkCounter < 20) { Bcolor = "#B8B8B8"; }
+    else if (drawCircle.BlinkCounter < 40) { Bcolor = "#006699"; }
+    else { drawCircle.BlinkCounter = 0; }
+	break;
+	}
+	mainContext.fillStyle = Bcolor;
+    mainContext.fill();
+    window.requestAnimationFrame(drawCircle);
+}
+drawCircle(); 
+</script>
+
+</body>
+</html>
