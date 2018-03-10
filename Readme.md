@@ -179,3 +179,7 @@ At the end, to regenerate HW configuration and update HAL drivers the only one t
    text	   data	    bss	    dec	    hex	filename
   45384	    320	   9940	  55644	   d95c	GenericSTM32F.elf
 ```
+
+- Small video presentation:
+
+[![Embedded HTTP server - video](https://img.youtube.com/vi/9brijFgNL5U/0.jpg)](https://www.youtube.com/watch?v=9brijFgNL5U)
