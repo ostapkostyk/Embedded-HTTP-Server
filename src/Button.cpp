@@ -6,7 +6,8 @@
   *          This code handles hardware buttons
   *          Constructor of the class creates linked list of buttons
   *          Main handler handles all buttons from the list ones called
-  *          Main handler must be called periodically (e.g. in main cycle)
+  *          Main handler must be called periodically (e.g. in main cycle or
+  *          in thread)
   *
   ******************************************************************************
   * Copyright (C) 2018  Ostap Kostyk
@@ -32,7 +33,9 @@
 
 Button* Button::pFirst = 0;
 
+#ifndef RTOS_USED
 Timer ButtonCtrlTimer{Timer::Type::Down, ButtonCtrlTime, true};
+#endif
 
 Button::Button(PORT_DEF Port, PIN_NUM_DEF Pin, ePressedLevel Level)
 {
@@ -56,7 +59,7 @@ Button* pButton;
 
     pButton = Button::pFirst;
 
-    if(pButton == 0)     //  Creating first instance of the Timer class
+    if(pButton == 0)     //  Creating first instance of the Button class
     {
         Button::pFirst = this;
     }
@@ -95,14 +98,16 @@ void Button::Ctrl(void)
 {
 Button* pButton;
 
-    if(Button::pFirst == 0)   //  No timers exist
+    if(Button::pFirst == 0)   //  No buttons exist
     {
         return;
     }
 
     pButton = Button::pFirst;
 
+#ifndef RTOS_USED
     if(ButtonCtrlTimer.Elapsed())
+#endif
     {
         while(1)
         {
@@ -169,7 +174,7 @@ Button* pButton;
             if(pButton->State == eState::Pressed) { pButton->PressedTimeCounter++; }
             else                                  { pButton->ReleasedTimeCounter++; }
 
-            if(pButton->Next == 0) { return; }   //  all LEDs done
+            if(pButton->Next == 0) { return; }   //  all Buttons done
 
             pButton = pButton->Next;
 
