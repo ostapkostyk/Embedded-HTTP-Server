@@ -31,12 +31,15 @@
 #ifndef LED_H_
 #define LED_H_
 
-#include <Timer.h>
 #include "common.h"
 
-using namespace mTimer;
+#ifndef RTOS_USED
+#include <Timer.h>
 
-// LEDCtrlTime LED mode is recalculated once timer run out to save CPU time
+using namespace mTimer;
+#endif
+
+// LEDCtrlTime LED mode is recalculated every LEDCtrlTime to save CPU time
 #define LEDCtrlTime     (_100ms_)
 
 class LED
@@ -77,15 +80,17 @@ enum class eMode{OFF = 0, ON, BlinkOn, BlinkOff, NFlashes};
 
 enum class eState{OFF = 0, ON};
 
+/* Linked list of LED instances */
 static LED* pFirst;
 LED* Prev;
 LED* Next;
 
+/* HW resources */
 PORT_DEF Port;
 PIN_NUM_DEF Pin;
 eActiveLevel Level;
 
-
+/* Miscellaneous */
 eMode Mode;
 eMode ModePrev;
 eState State;
@@ -93,12 +98,8 @@ unsigned long OnTime;
 unsigned long OffTime;
 unsigned long TimeCounter;
 unsigned int  FlashesCounter;
-
 };
 
 extern void LEDWritePin (PORT_DEF Port, PIN_NUM_DEF Pin, PIN_STATE_DEF PinState);
-
-
-
 
 #endif /* LED_H_ */

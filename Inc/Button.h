@@ -31,10 +31,13 @@
 #ifndef BUTTON_H_
 #define BUTTON_H_
 
-#include <Timer.h>
 #include "common.h"
 
+#ifndef RTOS_USED
+#include <Timer.h>
+
 using namespace mTimer;
+#endif
 
 // ButtonCtrlTime: Button state is recalculated once timer run out to save CPU time
 #define ButtonCtrlTime     (_30ms_)
@@ -76,15 +79,17 @@ unsigned long GetPressedTime(void);
 unsigned long GetReleasedTime(void);
 
 private:
+/* Linked list of Button instances */
 static Button* pFirst;
 Button* Prev;
 Button* Next;
 
+/* Hardware resources */
 PORT_DEF Port;
 PIN_NUM_DEF Pin;
 ePressedLevel Level;
 
-
+/* Miscellaneous */
 eState State, NewValue, OldValue, TestValue;
 bool PressedEventFlag, ReleasedEventFlag;
 unsigned char Step;
