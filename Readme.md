@@ -25,7 +25,7 @@ HTTP_content.c contains HTTP header, content of pages, list of recognized variab
 
 Current implementation uses STM32F103C8 microcontroller from ST. STM32CubeMX code generator can be used to add/change hardware configuration which allows fast start. Blue LED is controlled as an example ("Hello World!" application) in this project. Main HTTP page displays mode of the LED (Off, On, or blinking) and allows user to switch between that modes using buttons. Second page "Settings" lets user configure On/Off time of the LED in blinking mode and change SSID of the WiFi Access Point. All settings are being stored in emulated EEPROM (in  the flash memory of the controller) and restore after power off.
 
-Other classes are well described in my other repository (TODO: add link here!)
+Other classes are well described in my other repository (https://github.com/ostapkostyk/STM32F1-Template)
 
 HTTP pages in this example use scripts for animation and look like:
 
