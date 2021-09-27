@@ -1,37 +1,18 @@
+/* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file           : main.cpp
+  * @file           : main.c
   * @brief          : Main program body
   ******************************************************************************
-  ** This notice applies to any and all portions of this file
-  * that are not between comment pairs USER CODE BEGIN and
-  * USER CODE END. Other portions of this file, whether 
-  * inserted by the user or by software development tools
-  * are owned by their respective copyright owners.
+  * @attention
   *
-  * COPYRIGHT(c) 2018 STMicroelectronics
+  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
+  * All rights reserved.</center></h2>
   *
-  * Redistribution and use in source and binary forms, with or without modification,
-  * are permitted provided that the following conditions are met:
-  *   1. Redistributions of source code must retain the above copyright notice,
-  *      this list of conditions and the following disclaimer.
-  *   2. Redistributions in binary form must reproduce the above copyright notice,
-  *      this list of conditions and the following disclaimer in the documentation
-  *      and/or other materials provided with the distribution.
-  *   3. Neither the name of STMicroelectronics nor the names of its contributors
-  *      may be used to endorse or promote products derived from this software
-  *      without specific prior written permission.
-  *
-  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  * This software component is licensed by ST under BSD 3-Clause license,
+  * the "License"; You may not use this file except in compliance with the
+  * License. You may obtain a copy of the License at:
+  *                        opensource.org/licenses/BSD-3-Clause
   *
   ******************************************************************************
   * @file    main.cpp
@@ -39,7 +20,7 @@
   * @brief   main program body
   *
   ******************************************************************************
-  * Copyright (C) 2018  Ostap Kostyk
+  * Copyright (C) 2021  Ostap Kostyk
   * This notice applies to any and all portions of this file
   * that are between comment pairs USER CODE BEGIN and
   * USER CODE END.
@@ -60,15 +41,15 @@
   * Author contact information: Ostap Kostyk, email: ostap.kostyk@gmail.com
   ******************************************************************************
   */
-
+/* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "stm32f1xx_hal.h"
 
+/* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 extern "C" {
 #include "My_hal_uart_stm32f1xx.h"
-#include <stdio.h>
+//#include <stdio.h>
 #include "CircularBuffer.h"
 #include "eeprom.h"
 #include "ESP8266_Interface.h"
@@ -84,14 +65,25 @@ using namespace OKO_ESP8266;
 using namespace OKO_HTTP_SERVER;
 /* USER CODE END Includes */
 
+/* Private typedef -----------------------------------------------------------*/
+/* USER CODE BEGIN PTD */
+
+/* USER CODE END PTD */
+
+/* Private define ------------------------------------------------------------*/
+/* USER CODE BEGIN PD */
+/* USER CODE END PD */
+
+/* Private macro -------------------------------------------------------------*/
+/* USER CODE BEGIN PM */
+
+/* USER CODE END PM */
+
 /* Private variables ---------------------------------------------------------*/
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-
-/* Private variables ---------------------------------------------------------*/
-
 /* circular buffer structures (not a buffers themselves) for standard input/output */
 circular_buffer StdInOut_cb_Rx;
 circular_buffer StdInOut_cb_Tx;
@@ -145,11 +137,6 @@ static const uint32_t AP_DefaultNetMask = 0xFFFFFF00;
 #define WIFI_RX_DATA_BUF_SZ     500
 
 static uint8_t  WiFi_Step = 0;
-
-/*************************************************************
- *
- *************************************************************/
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -157,14 +144,12 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_USART2_UART_Init(void);
-
 /* USER CODE BEGIN PFP */
-/* Private function prototypes -----------------------------------------------*/
 
 /* USER CODE END PFP */
 
+/* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
 void BlockingFaultHandler(void)
 {
    while(1)
@@ -249,14 +234,14 @@ void ReadLEDSettingsFromHTTP(void)
             {
                 EE_Data.BlueLEDOnTime = HTTP_VAR_BlueLEDBlinkTimeOn.GetValueInteger();
                 EE_Data.BlueLEDOffTime = HTTP_VAR_BlueLEDBlinkTimeOff.GetValueInteger();
+#ifdef EEPROM_EMULATION_EN
                 if(EE_Status == 0)
                 {
-#ifdef EEPROM_EMULATION_EN
                     EE_Status += EE_WriteElem((uint16_t*)&EE_Data.BlueLEDOnTime, sizeof(EE_Data.BlueLEDOnTime));
                     EE_Status += EE_WriteElem((uint16_t*)&EE_Data.BlueLEDOffTime, sizeof(EE_Data.BlueLEDOffTime));
                     if(EE_Status) { debug_print("EE Write ERROR:%x\r\n", EE_Status); }
-#endif
                 }
+#endif
                 if(BlueLEDMode == LEDMode::Blink)
                 {
                     LED3.Blink(EE_Data.BlueLEDOnTime, EE_Data.BlueLEDOffTime, true);
@@ -361,34 +346,32 @@ char *pText;
 
     return false;
 }
-
 /* USER CODE END 0 */
 
 /**
   * @brief  The application entry point.
-  *
-  * @retval None
+  * @retval int
   */
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  memmgr_init();
+	  memmgr_init();
 
-#ifdef EEPROM_EMULATION_EN
-  /* EEPROM EMULATION-RELATED */
-  EE_AddrInit();
-  /* Unlock the Flash Program Erase controller */
-  HAL_FLASH_Unlock();
+	#ifdef EEPROM_EMULATION_EN
+	  /* EEPROM EMULATION-RELATED */
+	  EE_AddrInit();
+	  /* Unlock the Flash Program Erase controller */
+	  HAL_FLASH_Unlock();
 
-  /* Init EEPROM Emulation */
-  EE_Status = EE_Init();
+	  /* Init EEPROM Emulation */
+	  EE_Status = EE_Init();
 
-  /* END OF EEPROM EMULATION-RELATED */
-#endif
+	  /* END OF EEPROM EMULATION-RELATED */
+	#endif
 
   /* USER CODE END 1 */
 
-  /* MCU Configuration----------------------------------------------------------*/
+  /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
@@ -409,7 +392,6 @@ int main(void)
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-
   /* Configure UART for std in/out */
   if(SUCCESS != Init_USART_CB(&stdinout_huart, &StdInOut_cb_Rx, &StdInOut_cb_Tx, STD_IN_CB_SIZE, STD_OUT_CB_SIZE, sizeof(U8)))
   {
@@ -418,7 +400,7 @@ int main(void)
   Start_USART_Rx_IT(&stdinout_huart);
 
   /* stdout test */
-  printf("Copyright (c) 2018 Ostap Kostyk\r\n");
+  printf("Copyright (c) 2021 Ostap Kostyk\r\n");
   debug_print("START\r\n");
 
 #ifdef EXAMPLE_TIMER
@@ -504,121 +486,119 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-  /* USER CODE END WHILE */
+    /* USER CODE END WHILE */
 
-  /* USER CODE BEGIN 3 */
+    /* USER CODE BEGIN 3 */
+	   /* Handle LEDs */
+	    LED::Ctrl();
 
-    /* Handle LEDs */
-    LED::Ctrl();
+	    /* Handle Buttons */
+	    Button::Ctrl();
 
-    /* Handle Buttons */
-    Button::Ctrl();
+	    /* Test Button functions */
+	    if(Button1.GetState() == Button::eState::Pressed) { LED2.On(); }    /*  Turn LED2 On while button is pressed */
+	    else                                              { LED2.Off(); }   /*  Turn LED2 Off while button is released */
 
-    /* Test Button functions */
-    if(Button1.GetState() == Button::eState::Pressed) { LED2.On(); }    /*  Turn LED2 On while button is pressed */
-    else                                              { LED2.Off(); }   /*  Turn LED2 Off while button is released */
+	    if(Button1.PressedEvent())  /*  Button has been pressed event */
+	    {
+	        Button1.ClearPressedEvent();    /*  Clear event */
+	        LED4.Off();
+	    }
 
-    if(Button1.PressedEvent())  /*  Button has been pressed event */
-    {
-        Button1.ClearPressedEvent();    /*  Clear event */
-        LED4.Off();
-    }
+	    if(Button1.ReleasedEvent())
+	    {
+	        Button1.ClearReleasedEvent();
+	        /*  turn LED4 On for a time of which button kept pressed last time (to test Button, LED and Timer classes) */
+	        LED4.BlinkNtimes(Button1.GetPressedTime(), _100ms_, 1);
+	    }
 
-    if(Button1.ReleasedEvent())
-    {
-        Button1.ClearReleasedEvent();
-        /*  turn LED4 On for a time of which button kept pressed last time (to test Button, LED and Timer classes) */
-        LED4.BlinkNtimes(Button1.GetPressedTime(), _100ms_, 1);
-    }
+	/****************************************************
+	 *          WiFi Communication
+	 ****************************************************/
+	ESP1.Process();     /*  WiFi module main handler (can be skipped when WiFi communication is not needed to save CPU resources) */
 
-/****************************************************
- *          WiFi Communication
- ****************************************************/
-ESP1.Process();     /*  WiFi module main handler (can be skipped when WiFi communication is not needed to save CPU resources) */
+	  if(ESP1.isModuleReady())  /*  Module replied on test request so it is alive */
+	  {
+	      switch(WiFi_Step)
+	      {
+	      /* First, start Access Point and Server */
+	      case 0:
+	      do
+	      {
+	        if(ESP1.GetCurrentModuleMode() == ESP::eModuleMode::Undefined)
+	        {
+	            ESP1.SwitchToAccessPointMode(AccessPointName, (char*)AccessPointPassword, 6, ESP::eECNType::WPA2_PSK);  /*  Switches WiFi module to AccessPoint mode (not Station) */
+	        }
+	        else if(ESP1.GetCurrentModuleMode() == ESP::eModuleMode::AccessPoint)   /*  switched to AccessPoint mode successfully */
+	        {
+	          /*  start AP */
+	          if(ESP1.LocalAccessPointState() == ESP::eAccessPointState::Started)   /*  AccessPoint started */
+	          {
+	              /*  start server */
+	              switch(ESP1.GetServerState())
+	              {
+	              case ESP::eServerState::Connected:
+	                  if(ESP1.SetAccessPointIP(AP_DefaultIP, AP_DefaultIP, AP_DefaultNetMask)) break;    //  wait for IP change
+	                  WiFi_Step++;  /*  go to next step */
+	                  break;
 
-  if(ESP1.isModuleReady())  /*  Module replied on test request so it is alive */
-  {
-      switch(WiFi_Step)
-      {
-      /* First, start Access Point and Server */
-      case 0:
-      do
-      {
-        if(ESP1.GetCurrentModuleMode() == ESP::eModuleMode::Undefined)
-        {
-            ESP1.SwitchToAccessPointMode(AccessPointName, (char*)AccessPointPassword, 6, ESP::eECNType::WPA2_PSK);  /*  Switches WiFi module to AccessPoint mode (not Station) */
-        }
-        else if(ESP1.GetCurrentModuleMode() == ESP::eModuleMode::AccessPoint)   /*  switched to AccessPoint mode successfully */
-        {
-          /*  start AP */
-          if(ESP1.LocalAccessPointState() == ESP::eAccessPointState::Started)   /*  AccessPoint started */
-          {
-              /*  start server */
-              switch(ESP1.GetServerState())
-              {
-              case ESP::eServerState::Connected:
-                  if(ESP1.SetAccessPointIP(AP_DefaultIP, AP_DefaultIP, AP_DefaultNetMask)) break;    //  wait for IP change
-                  WiFi_Step++;  /*  go to next step */
-                  break;
+	              case ESP::eServerState::Disconnected:
+	              case ESP::eServerState::Undefined:
+	                  ESP1.StartServer((unsigned int)80);
+	                  break;
 
-              case ESP::eServerState::Disconnected:
-              case ESP::eServerState::Undefined:
-                  ESP1.StartServer((unsigned int)80);
-                  break;
+	              case ESP::eServerState::Error:
+	              case ESP::eServerState::ConnectTimeout:
+	              default:
+	                  //TODO
+	                  break;
+	              }
+	          }
+	        }
+	        else
+	        {
+	          /* Error */
+	        }
+	      }while(0);
+	      break;
 
-              case ESP::eServerState::Error:
-              case ESP::eServerState::ConnectTimeout:
-              default:
-                  //TODO
-                  break;
-              }
-          }
-        }
-        else
-        {
-          /* Error */
-        }
-      }while(0);
-      break;
+	      case 1:
+	          if(ESP1.GetServerState() != ESP::eServerState::Connected)     /*  if server stopped (or module restarted, etc.) - restart it */
+	          {
+	              WiFi_Step = 0;
+	              break;
+	          }
 
-      case 1:
-          if(ESP1.GetServerState() != ESP::eServerState::Connected)     /*  if server stopped (or module restarted, etc.) - restart it */
-          {
-              WiFi_Step = 0;
-              break;
-          }
+	          /*  run HTTP server */
+	          MyHTTPServer.Handle();
+	          break;
 
-          /*  run HTTP server */
-          MyHTTPServer.Handle();
-          break;
+	      default:
+	          WiFi_Step = 0;
+	          break;
+	      }
+	  }
+	  else
+	  {
 
-      default:
-          WiFi_Step = 0;
-          break;
-      }
-  }
-  else
-  {
+	  }
 
-  }
+	  HTTPVariable::HTTPVariableReceivedFlag = false; //  clear global flag indicating that there is/are variable(s) received from client (this flag indicates new data coming from HTTP client)
 
-  HTTPVariable::HTTPVariableReceivedFlag = false; //  clear global flag indicating that there is/are variable(s) received from client (this flag indicates new data coming from HTTP client)
+	/******** END OF ESP PART ******/
 
-/******** END OF ESP PART ******/
+	#if 0
+	    // Reception from stdin example:
+	    char mystr[20] = "";
 
-#if 0
-    // Reception from stdin example:
-    char mystr[20] = "";
+	    /* Attention! Next line blocks execution of main cycle until user enters text line! */
+	    fgets(mystr, 19, stdin);
 
-    /* Attention! Next line blocks execution of main cycle until user enters text line! */
-    fgets(mystr, 19, stdin);
-
-    if(strstr(mystr, "ok")) { debug_print("Received\r\n"); }
-    // End of Reception from stdin example
-#endif
+	    if(strstr(mystr, "ok")) { debug_print("Received\r\n"); }
+	    // End of Reception from stdin example
+	#endif
   }
   /* USER CODE END 3 */
-
 }
 
 /**
@@ -627,12 +607,12 @@ ESP1.Process();     /*  WiFi module main handler (can be skipped when WiFi commu
   */
 void SystemClock_Config(void)
 {
+  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
-  RCC_OscInitTypeDef RCC_OscInitStruct;
-  RCC_ClkInitTypeDef RCC_ClkInitStruct;
-
-    /**Initializes the CPU, AHB and APB busses clocks 
-    */
+  /** Initializes the RCC Oscillators according to the specified parameters
+  * in the RCC_OscInitTypeDef structure.
+  */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV2;
@@ -642,11 +622,10 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
-    _Error_Handler(__FILE__, __LINE__);
+    Error_Handler();
   }
-
-    /**Initializes the CPU, AHB and APB busses clocks 
-    */
+  /** Initializes the CPU, AHB and APB buses clocks
+  */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
@@ -656,25 +635,25 @@ void SystemClock_Config(void)
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
   {
-    _Error_Handler(__FILE__, __LINE__);
+    Error_Handler();
   }
-
-    /**Configure the Systick interrupt time 
-    */
-  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
-
-    /**Configure the Systick 
-    */
-  HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
-
-  /* SysTick_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
 }
 
-/* USART1 init function */
+/**
+  * @brief USART1 Initialization Function
+  * @param None
+  * @retval None
+  */
 static void MX_USART1_UART_Init(void)
 {
 
+  /* USER CODE BEGIN USART1_Init 0 */
+
+  /* USER CODE END USART1_Init 0 */
+
+  /* USER CODE BEGIN USART1_Init 1 */
+
+  /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
   huart1.Init.BaudRate = 115200;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
@@ -685,15 +664,29 @@ static void MX_USART1_UART_Init(void)
   huart1.Init.OverSampling = UART_OVERSAMPLING_16;
   if (HAL_UART_Init(&huart1) != HAL_OK)
   {
-    _Error_Handler(__FILE__, __LINE__);
+    Error_Handler();
   }
+  /* USER CODE BEGIN USART1_Init 2 */
+
+  /* USER CODE END USART1_Init 2 */
 
 }
 
-/* USART2 init function */
+/**
+  * @brief USART2 Initialization Function
+  * @param None
+  * @retval None
+  */
 static void MX_USART2_UART_Init(void)
 {
 
+  /* USER CODE BEGIN USART2_Init 0 */
+
+  /* USER CODE END USART2_Init 0 */
+
+  /* USER CODE BEGIN USART2_Init 1 */
+
+  /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
   huart2.Init.BaudRate = 115200;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
@@ -704,22 +697,22 @@ static void MX_USART2_UART_Init(void)
   huart2.Init.OverSampling = UART_OVERSAMPLING_16;
   if (HAL_UART_Init(&huart2) != HAL_OK)
   {
-    _Error_Handler(__FILE__, __LINE__);
+    Error_Handler();
   }
+  /* USER CODE BEGIN USART2_Init 2 */
+
+  /* USER CODE END USART2_Init 2 */
 
 }
 
-/** Configure pins as 
-        * Analog 
-        * Input 
-        * Output
-        * EVENT_OUT
-        * EXTI
-*/
+/**
+  * @brief GPIO Initialization Function
+  * @param None
+  * @retval None
+  */
 static void MX_GPIO_Init(void)
 {
-
-  GPIO_InitTypeDef GPIO_InitStruct;
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOD_CLK_ENABLE();
@@ -741,14 +734,16 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pins : ESP_RST_Pin ESP_CH_EN_Pin LED6_Pin */
   GPIO_InitStruct.Pin = ESP_RST_Pin|ESP_CH_EN_Pin|LED6_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : LED1_Pin LED2_Pin LED3_Pin LED4_Pin 
+  /*Configure GPIO pins : LED1_Pin LED2_Pin LED3_Pin LED4_Pin
                            LED5_Pin */
-  GPIO_InitStruct.Pin = LED1_Pin|LED2_Pin|LED3_Pin|LED4_Pin 
+  GPIO_InitStruct.Pin = LED1_Pin|LED2_Pin|LED3_Pin|LED4_Pin
                           |LED5_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
@@ -766,15 +761,14 @@ static void MX_GPIO_Init(void)
 
 /**
   * @brief  This function is executed in case of error occurrence.
-  * @param  file: The file name as string.
-  * @param  line: The line in file as a number.
   * @retval None
   */
-void _Error_Handler(char *file, int line)
+void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-  while(1)
+  __disable_irq();
+  while (1)
   {
   }
   /* USER CODE END Error_Handler_Debug */
@@ -788,21 +782,13 @@ void _Error_Handler(char *file, int line)
   * @param  line: assert_param error line source number
   * @retval None
   */
-void assert_failed(uint8_t* file, uint32_t line)
-{ 
+void assert_failed(uint8_t *file, uint32_t line)
+{
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
-    ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

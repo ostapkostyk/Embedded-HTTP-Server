@@ -2,6 +2,7 @@
 #define _COMMON_H_
 
 #include "config.h"
+#include <stdio.h>
 #include "User_typedefs.h"
 #include "memmgr.h"
 #include "debug.h"

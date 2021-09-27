@@ -32,6 +32,7 @@
 
 #include "common.h"
 #include "CircularBuffer.h"
+#include "main.h"
 
 /* ==== ESP 1 Configuration ==== */
 #define ESP1_HUART_NUM  1

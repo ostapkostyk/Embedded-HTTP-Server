@@ -47,11 +47,6 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 
-/* Dummy variables to protect eeprom pages if code size is bigger than 32kb (F401)
-needed in Mbed online compiler to avoid conflict with linker (N.S.) */
-const uint8_t Eeprom_area0[PAGE_SIZE] __attribute__((at(PAGE0_BASE_ADDRESS),used))={ [0 ... (PAGE_SIZE-1)] = 0xFF };
-const uint8_t Eeprom_area1[PAGE_SIZE] __attribute__((at(PAGE1_BASE_ADDRESS),used))={ [0 ... (PAGE_SIZE-1)] = 0xFF };
-
 /* Global variable used to store variable value in read sequence */
 uint16_t DataVar = 0;
 
