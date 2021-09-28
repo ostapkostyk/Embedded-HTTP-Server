@@ -1,12 +1,19 @@
 Template application for STM32-series microcontrollers
 
-Copyright (C) 2018  Ostap Kostyk
+Copyright (C) 2021  Ostap Kostyk
 All rights reserved.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
+
+This source code also includes third party source code subject to
+specific license terms from such third parties. Such third party source code  
+is supplied under such specific license terms and is not subject to the 
+terms and conditions of license hereunder. By copying, downloading, 
+accessing or otherwise using this source code package, the recipient agrees 
+to be bound by such license terms with regard to such third party source code.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
