@@ -182,11 +182,11 @@ int PageIndex;
                         Process[i].pSemaphore = 0;  //  optional semaphore from application
                         if(Process[i].HostNameFound)
                         {
-                            ret = HTTP_RenderPage(Process[i].RequestedPageIndex, Process[i].HostName, &Process[i].pSemaphore);
+                            ret = HTTP_RenderPage(Process[i].RequestedPageIndex, Process[i].HostName, &(Process[i].pSemaphore));
                         }
                         else
                         {
-                            ret = HTTP_RenderPage(Process[i].RequestedPageIndex, 0, &Process[i].pSemaphore);
+                            ret = HTTP_RenderPage(Process[i].RequestedPageIndex, 0, &(Process[i].pSemaphore));
                         }
 
                         if(ret) //  application rendered page successfully, send it in next step (maybe by several pieces)
@@ -328,7 +328,7 @@ int PageIndex;
             break;
 
         case 4:     //  check if application is ready with page rendering
-            if(*Process[i].pSemaphore == true)  //  application is ready with page rendering
+            if(*(Process[i].pSemaphore) == true)  //  application is ready with page rendering
             {
                 Process[i].STEP = 3;    //  send out rendered page
             }
@@ -622,7 +622,9 @@ char* HTTP_Server::ParseQueryString(char *ReqStr, size_t len, HTTP_Server::Respo
 unsigned int pos = 0;
 char c;
 int num, IntValue;
+#ifdef HTTP_SERV_SUPPORT_FLOATING_POINT_VARS
 float FloatValue;
+#endif
 bool exit = false;
 HTTPVariable* Variable = 0;
 
@@ -673,6 +675,7 @@ HTTPVariable* Variable = 0;
                             break;
 
                         case HTTPVariable::HTTPVarType::Float:
+#ifdef HTTP_SERV_SUPPORT_FLOATING_POINT_VARS
                             num = sscanf(ReqStr, "%f", &FloatValue);
                             if(num == 1)
                             {
@@ -680,6 +683,7 @@ HTTPVariable* Variable = 0;
                                 Variable->NewValue = true;
                                 HTTPVariable::HTTPVariableReceivedFlag = true;
                             }
+#endif
                             break;
                         }
                         ReqStr += pos + 1;

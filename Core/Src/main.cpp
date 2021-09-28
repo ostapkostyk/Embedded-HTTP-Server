@@ -51,7 +51,11 @@ extern "C" {
 #include "My_hal_uart_stm32f1xx.h"
 //#include <stdio.h>
 #include "CircularBuffer.h"
+
+#ifdef EEPROM_EMULATION_EN
 #include "eeprom.h"
+#endif
+
 #include "ESP8266_Interface.h"
 }
 #include "Timer.h"
@@ -94,6 +98,22 @@ circular_buffer StdInOut_cb_Tx;
 EE_Data_t EE_Data;
 uint16_t VirtAddVarTab[NB_OF_VAR];
 uint16_t EE_Status;
+#else
+/* normally EEPROM emulation is used and application uses structures defined by eeprom module.
+ * for simplicity of example application, those structures are defined below if EEPROM emulation is not used
+ * to avoid enclosing a lot of code below in #ifdef EEPROM_EMULATION_EN #endif pair*/
+#define EE_WIFI_SSID_LEN 22
+
+struct
+{
+  uint16_t Init;
+  uint32_t BlueLEDOnTime;
+  uint32_t BlueLEDOffTime;
+  uint16_t BlueLEDMode;
+  char     WiFi_SSID[EE_WIFI_SSID_LEN];
+} EE_Data;
+
+//save_data_t EE_Data;
 #endif
 
 #ifdef EXAMPLE_TIMER
@@ -232,9 +252,10 @@ void ReadLEDSettingsFromHTTP(void)
         {
             if(HTTP_VAR_BlueLEDBlinkTimeOn.GetValueInteger() > 0 && HTTP_VAR_BlueLEDBlinkTimeOff.GetValueInteger() > 0)
             {
+#ifdef EEPROM_EMULATION_EN
                 EE_Data.BlueLEDOnTime = HTTP_VAR_BlueLEDBlinkTimeOn.GetValueInteger();
                 EE_Data.BlueLEDOffTime = HTTP_VAR_BlueLEDBlinkTimeOff.GetValueInteger();
-#ifdef EEPROM_EMULATION_EN
+
                 if(EE_Status == 0)
                 {
                     EE_Status += EE_WriteElem((uint16_t*)&EE_Data.BlueLEDOnTime, sizeof(EE_Data.BlueLEDOnTime));
@@ -270,8 +291,8 @@ char* pWiFiSSIDTxt;
             if(pos && pos == len && len < EE_WIFI_SSID_LEN)  /*  if string is not empty and contain only allowed symbols */
             {
                 /* save new name: */
-                strncpy(EE_Data.WiFi_SSID, pWiFiSSIDTxt, EE_WIFI_SSID_LEN-1);    /*  update EEPROM data before saving to flash */
 #ifdef EEPROM_EMULATION_EN
+                strncpy(EE_Data.WiFi_SSID, pWiFiSSIDTxt, EE_WIFI_SSID_LEN-1);    /*  update EEPROM data before saving to flash */
                 EE_WriteElem((uint16_t*)&EE_Data.WiFi_SSID, EE_WIFI_SSID_LEN);  /*  save to EEPROM */
 #endif
             }
@@ -285,7 +306,7 @@ bool HTTP_RenderPage(int PageIndex, char *pHostName, bool **pProcessSemaphore)
 size_t len;
 char *pText;
 
-    pProcessSemaphore = 0;  /*  no semaphore assigned */
+    *pProcessSemaphore = 0;  /*  no semaphore assigned */
 
     switch(PageIndex)
     {
@@ -327,21 +348,21 @@ char *pText;
 
         return true;
 
-        break;
+	break;
 
-        /* settings.html */
-        case 1:
-            /* First read-out data from HTTP request to apply it and immediately generate new status info for the page */
-            ReadLEDSettingsFromHTTP();
-            UpdateSSIDfromHTTP();
-            /* Generate dynamic parts of settings.html */
-            snprintf(pHTTP_StringForRendering, HTML_RENDER_STR_SIZE-1, "<p id=\"BLEDOnAct\", visibility: hidden>%d</p>\n<p id=\"BLEDOffAct\", visibility: hidden>%d</p>", (int)EE_Data.BlueLEDOnTime, (int)EE_Data.BlueLEDOffTime);
-            snprintf(pHTTP_StringForRendering2, HTML_RENDER_STR_SIZE2-1, "Actual: \"%s\"<br />", EE_Data.WiFi_SSID);
-            return true;
-            break;
+	/* settings.html */
+	case 1:
+		/* First read-out data from HTTP request to apply it and immediately generate new status info for the page */
+		ReadLEDSettingsFromHTTP();
+		UpdateSSIDfromHTTP();
+		/* Generate dynamic parts of settings.html */
+		snprintf(pHTTP_StringForRendering, HTML_RENDER_STR_SIZE-1, "<p id=\"BLEDOnAct\", visibility: hidden>%d</p>\n<p id=\"BLEDOffAct\", visibility: hidden>%d</p>", (int)EE_Data.BlueLEDOnTime, (int)EE_Data.BlueLEDOffTime);
+		snprintf(pHTTP_StringForRendering2, HTML_RENDER_STR_SIZE2-1, "Actual: \"%s\"<br />", EE_Data.WiFi_SSID);
+		return true;
+		break;
 
-        default:
-            return false;
+	default:
+		return false;
     }
 
     return false;
@@ -448,7 +469,7 @@ int main(void)
       if(EE_Data.Init != EE_INIT_MAGIC_NUMBER)  /*  EEPROM is uninitialized, write default values */
       {
           /* write default SSID to eeprom */
-          strncpy(EE_Data.WiFi_SSID, AccessPointName, EE_WIFI_SSID_LEN-1);
+          strncpy(EE_Data.WiFi_SSID, AccessPointName, EE_WIFI_SSID_LEN);
           EE_Status += EE_WriteElem((uint16_t*)&EE_Data.WiFi_SSID, EE_WIFI_SSID_LEN);
           /* write default settings of blue LED */
           EE_Data.BlueLEDMode = (uint16_t)LEDMode::Off;

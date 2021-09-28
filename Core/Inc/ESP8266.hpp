@@ -60,7 +60,8 @@ namespace OKO_ESP8266
 #define ESP8266_RECEIVED_COMMAND_PARAM_STR2_LEN 20                                                      //  length of the second string using to store string responses of the ESP module.
 
 /* Enable/Disable debug output to stdout */
-#define ESPDEBUG    1
+#define ESPDEBUG    0
+//#define ESP_DEBUG_HTTP_REQ_ECHO	  // enables/disables echo of HTTP requests to the debug terminal. Should be used as preprocessor symbol
 #define esp_debug_print(...) do { if (ESPDEBUG) fprintf(stdout, ##__VA_ARGS__); } while (0) //  debug print for this module. Compiler should not exclude all calls from the code if ESPDEBUG not defined
 
 /* END of Configuration */

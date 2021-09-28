@@ -436,6 +436,7 @@ STATUS ESP::CloseSocket(uint8_t SocketID)
         Socket[SocketID].DataTx = 0;
         Socket[SocketID].RxBuffSize = 0;
         Socket[SocketID].RxDataLen = 0;
+        Socket[SocketID].TxState = eSocketSendDataStatus::Idle;
         return SUCCESS;
     }
 
@@ -512,6 +513,12 @@ uint16_t ESP::SocketRecv(uint8_t SocketID)
         {
             return -1;
         }
+#ifdef ESP_DEBUG_HTTP_REQ_ECHO
+        esp_debug_print(">>>");
+        uint16_t tmp_cnt = Socket[SocketID].RxDataLen;
+        uint16_t ptr_offset = 0;
+        while(tmp_cnt--) esp_debug_print("%c", *(Socket[SocketID].DataRx + ptr_offset++));
+#endif
         return Socket[SocketID].RxDataLen;
     }
 
@@ -1529,7 +1536,7 @@ void ESP::StateChangeConnectionType::Process(ESP* pESP)
 /*************************************************************************************************
  * SEND DATA
  *
- * Other: When SINGLE packet containing “+++” is received, it returns to command mode. (if command
+ * Other: When SINGLE packet containing â€œ+++â€ is received, it returns to command mode. (if command
  *        "AT+CIPSEND" performed. Unvarnished transmission mode)
  *
  *************************************************************************************************/
@@ -1630,7 +1637,7 @@ U8 i;
                     pESP->Socket[SocketId].DataTx += len;
                     pESP->Socket[SocketId].TxPacketLen -= len;
                     pESP->Socket[SocketId].TxDataLen -= len;
-                    pESP->StateTimer.Set(_30ms_);   //  time to send at least part of data out (not time-out)
+                    pESP->StateTimer.Set(_50ms_);   //  time to send at least part of data out (not time-out)
                     pESP->StateTimer.Reset();
                     //esp_debug_print("ESP: Sent part of data (St2), len=%u\n", len);
                     pESP->STEP = 3;
@@ -1695,7 +1702,7 @@ U8 i;
                         pESP->Socket[SocketId].DataTx += len;
                         pESP->Socket[SocketId].TxPacketLen -= len;
                         pESP->Socket[SocketId].TxDataLen -= len;
-                        pESP->StateTimer.Set(_30ms_);
+                        pESP->StateTimer.Set(_50ms_);
                         pESP->StateTimer.Reset();
                         //esp_debug_print("ESP: Sent part of packet (St3), len=%u\n", len);
                         break;
@@ -1734,6 +1741,8 @@ U8 i;
         if(pESP->StateTimer.Elapsed())
         {
             esp_debug_print("ESP: Data Send Timeout\n");
+            pESP->CloseSocket(SocketId);
+            pESP->CurrentState = &pESP->smModuleReset;
         }
 
         if(pESP->isCommandReceived(eAT::FAIL) ||
@@ -1741,7 +1750,8 @@ U8 i;
            pESP->isCommandReceived(eAT::UNLINK))
         {
             esp_debug_print("ESP: Data Send Fail\n");
-            // TODO
+            pESP->CloseSocket(SocketId);
+            pESP->CurrentState = &pESP->smStandby;
         }
 
         if(pESP->isCommandReceived(eAT::SEND_OK))
@@ -1973,6 +1983,8 @@ uint8_t i;
                 pESP->CurrentState = &pESP->smModuleReset;
             }
         }
+        // TODO: else?
+        pESP->Socket[SocketId].TxState = eSocketSendDataStatus::Idle;
         break;
 
     case 2:

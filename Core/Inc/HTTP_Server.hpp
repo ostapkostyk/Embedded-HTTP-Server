@@ -37,6 +37,8 @@ extern "C" {
 }
 #include "HTTP_content.h"
 
+//#define HTTP_SERV_SUPPORT_FLOATING_POINT_VARS	// support floating-point variables parsing. Significantly increases app footprint! Should be enables in the IDE as preprocessor symbol
+
 /* Application should render dynamic fields of the page and return true if success, otherwise false
  * Arguments: PageIndex is index of page in HTTPServerContent[] array, pHostName pointer to host name (text string) if received, otherwise zero (e.g. HTPP 1.0 protocol)*/
 extern bool HTTP_RenderPage(int PageIndex, char *pHostName, bool **pProcessSemaphore);
